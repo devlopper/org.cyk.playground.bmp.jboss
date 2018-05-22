@@ -16,7 +16,7 @@ import org.junit.Test;
 public class SetupUnitTest {
 
 	@Test
-	public void processFromFile(){
+	public void processFromFile00(){
 		KnowledgeBuilder knowledgeBuilder = KnowledgeBuilderFactory.newKnowledgeBuilder();
 		knowledgeBuilder.add(ResourceFactory.newClassPathResource("org/cyk/playground/bpm/jboss/demo.bpmn"), ResourceType.BPMN2);
 		KnowledgeBase knowledgeBase = knowledgeBuilder.newKnowledgeBase();			
@@ -24,6 +24,18 @@ public class SetupUnitTest {
         HashMap<String, Object> params = new HashMap<String, Object>();
         params.put("name", "Francesco");        
         knowledgeSession.startProcess("com.sample.hello",params);
+        knowledgeSession.dispose();
+	}
+	
+	@Test
+	public void processFromFile01(){
+		KnowledgeBuilder knowledgeBuilder = KnowledgeBuilderFactory.newKnowledgeBuilder();
+		knowledgeBuilder.add(ResourceFactory.newClassPathResource("org/cyk/playground/bpm/jboss/demo01.bpmn"), ResourceType.BPMN2);
+		KnowledgeBase knowledgeBase = knowledgeBuilder.newKnowledgeBase();			
+		StatefulKnowledgeSession knowledgeSession = knowledgeBase.newStatefulKnowledgeSession();		
+        HashMap<String, Object> params = new HashMap<String, Object>();
+        params.put("name", "Francesco");        
+        knowledgeSession.startProcess("defaultPackage.New_Process",params);
         knowledgeSession.dispose();
 	}
 	
