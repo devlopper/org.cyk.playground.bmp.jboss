@@ -2,26 +2,31 @@ package org.cyk.playground.bpm.jboss;
 
 import java.util.HashMap;
 
-import org.drools.KnowledgeBase;
-import org.drools.builder.KnowledgeBuilder;
-import org.drools.builder.KnowledgeBuilderFactory;
-import org.drools.builder.ResourceType;
-import org.drools.io.ResourceFactory;
-import org.drools.runtime.StatefulKnowledgeSession;
 import org.jbpm.bpmn2.xml.XmlBPMNProcessDumper;
 import org.jbpm.ruleflow.core.RuleFlowProcess;
 import org.jbpm.ruleflow.core.RuleFlowProcessFactory;
+import org.jbpm.test.JbpmJUnitBaseTestCase;
 import org.junit.Test;
+import org.kie.api.KieServices;
+import org.kie.api.builder.KieFileSystem;
+import org.kie.api.builder.ReleaseId;
+import org.kie.api.io.Resource;
+import org.kie.api.runtime.KieSession;
+import org.kie.api.runtime.manager.RuntimeEngine;
 
-public class SetupUnitTest {
+
+public class SetupUnitTest extends JbpmJUnitBaseTestCase  {
 
 	@Test
 	public void processFromFile00(){
-		KnowledgeBuilder knowledgeBuilder = KnowledgeBuilderFactory.newKnowledgeBuilder();
-		knowledgeBuilder.add(ResourceFactory.newClassPathResource("org/cyk/playground/bpm/jboss/demo.bpmn"), ResourceType.BPMN2);
-		KnowledgeBase knowledgeBase = knowledgeBuilder.newKnowledgeBase();			
-		StatefulKnowledgeSession knowledgeSession = knowledgeBase.newStatefulKnowledgeSession();		
-        HashMap<String, Object> params = new HashMap<String, Object>();
+		// create runtime manager with single process - hello.bpmn
+        createRuntimeManager("org/cyk/playground/bpm/jboss/demo.bpmn");
+        // take RuntimeManager to work with process engine
+        RuntimeEngine runtimeEngine = getRuntimeEngine();
+        // get access to KieSession instance
+        KieSession knowledgeSession = runtimeEngine.getKieSession();
+		
+		HashMap<String, Object> params = new HashMap<String, Object>();
         params.put("name", "Francesco");        
         knowledgeSession.startProcess("com.sample.hello",params);
         knowledgeSession.dispose();
@@ -29,10 +34,13 @@ public class SetupUnitTest {
 	
 	@Test
 	public void processFromFile01(){
-		KnowledgeBuilder knowledgeBuilder = KnowledgeBuilderFactory.newKnowledgeBuilder();
-		knowledgeBuilder.add(ResourceFactory.newClassPathResource("org/cyk/playground/bpm/jboss/demo01.bpmn"), ResourceType.BPMN2);
-		KnowledgeBase knowledgeBase = knowledgeBuilder.newKnowledgeBase();			
-		StatefulKnowledgeSession knowledgeSession = knowledgeBase.newStatefulKnowledgeSession();		
+		// create runtime manager with single process - hello.bpmn
+        createRuntimeManager("org/cyk/playground/bpm/jboss/demo01.bpmn");
+        // take RuntimeManager to work with process engine
+        RuntimeEngine runtimeEngine = getRuntimeEngine();
+        // get access to KieSession instance
+        KieSession knowledgeSession = runtimeEngine.getKieSession();
+        
         HashMap<String, Object> params = new HashMap<String, Object>();
         params.put("name", "Francesco");        
         knowledgeSession.startProcess("defaultPackage.New_Process",params);
@@ -56,16 +64,18 @@ public class SetupUnitTest {
 			    .connection(1, 2)
 			    .connection(2, 3);
 		RuleFlowProcess process = factory.validate().getProcess();
-		String asXml = XmlBPMNProcessDumper.INSTANCE.dump(process);
 		
-		KnowledgeBuilder knowledgeBuilder = KnowledgeBuilderFactory.newKnowledgeBuilder();
-		knowledgeBuilder.add(ResourceFactory.newByteArrayResource(asXml.getBytes()), ResourceType.BPMN2);
-		KnowledgeBase knowledgeBase = knowledgeBuilder.newKnowledgeBase();
-		StatefulKnowledgeSession ksession = knowledgeBase.newStatefulKnowledgeSession();
-        HashMap<String, Object> params = new HashMap<String, Object>();
-        params.put("name", "Francesco"); 
-        ksession.startProcess("com.sample.hello",params);
-        ksession.dispose();
+		KieServices ks = KieServices.Factory.get();
+		KieFileSystem kfs = ks.newKieFileSystem();
+		Resource resource = ks.getResources().newByteArrayResource(XmlBPMNProcessDumper.INSTANCE.dump(process).getBytes());
+		resource.setSourcePath("helloworld.bpmn2");
+		kfs.write(resource);
+		ReleaseId releaseId = ks.newReleaseId("org.jbpm", "helloworld", "1.0");
+		kfs.generateAndWritePomXML(releaseId);
+		ks.newKieBuilder(kfs).buildAll();
+		KieSession kieSession = ks.newKieContainer(releaseId).newKieSession();
+		kieSession.startProcess("com.sample.hello");		
+		kieSession.dispose();
 	}
 
 }
