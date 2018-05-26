@@ -4,17 +4,14 @@
                  xsi:schemaLocation="http://java.sun.com/xml/ns/persistence/orm orm_2_0.xsd"
                  version="2.0">
       
-      <entity class="org.jbpm.persistence.processinstance.ProcessInstanceInfo" metadata-complete="false">        
-        <attributes>            
+      <entity class="org.drools.persistence.info.SessionInfo" metadata-complete="false">
+        <attributes>
             <basic name="startDate" access="FIELD" >
                 <temporal>TIMESTAMP</temporal>
-            </basic>
-            <basic name="lastReadDate" access="FIELD" >
-                <temporal>TIMESTAMP</temporal>
-            </basic>
+            </basic>    
             <basic name="lastModificationDate" access="FIELD" >
                 <temporal>TIMESTAMP</temporal>
-            </basic>
+            </basic>            
         </attributes>
       </entity>
       
