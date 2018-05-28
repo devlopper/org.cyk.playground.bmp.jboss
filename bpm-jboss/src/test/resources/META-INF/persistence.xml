@@ -2,40 +2,46 @@
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://java.sun.com/xml/ns/persistence http://java.sun.com/xml/ns/persistence/persistence_2_0.xsd"
 	version="2.0">
-	<persistence-unit name="persistenceUnitHibernate"
-		transaction-type="JTA">
-		
+	<persistence-unit name="persistenceUnitHibernateResourceLocal" transaction-type="RESOURCE_LOCAL">
 		<mapping-file>META-INF/JBPMorm.xml</mapping-file>
 		<mapping-file>META-INF/mapping/WorkItemInfo.xml</mapping-file>
 		<mapping-file>META-INF/mapping/SessionInfo.xml</mapping-file>
 		<mapping-file>META-INF/mapping/ProcessInstanceInfo.xml</mapping-file>
-    	
     	<class>org.jbpm.persistence.correlation.CorrelationKeyInfo</class>
     	<class>org.jbpm.persistence.correlation.CorrelationPropertyInfo</class>
-		
 		<exclude-unlisted-classes>true</exclude-unlisted-classes>
-		
 	</persistence-unit>
 
-	<persistence-unit name="persistenceUnitEclipseLink"
-		transaction-type="JTA">
-		<provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
-		
+	<persistence-unit name="persistenceUnitHibernateJta" transaction-type="JTA">
+		<mapping-file>META-INF/JBPMorm.xml</mapping-file>
 		<mapping-file>META-INF/mapping/WorkItemInfo.xml</mapping-file>
 		<mapping-file>META-INF/mapping/SessionInfo.xml</mapping-file>
 		<mapping-file>META-INF/mapping/ProcessInstanceInfo.xml</mapping-file>
-    	
-    	<class>org.drools.persistence.info.SessionInfo</class>
-    	<class>org.drools.persistence.info.WorkItemInfo</class>
-    	<class>org.jbpm.persistence.processinstance.ProcessInstanceInfo</class>
-    	
     	<class>org.jbpm.persistence.correlation.CorrelationKeyInfo</class>
     	<class>org.jbpm.persistence.correlation.CorrelationPropertyInfo</class>
-    	
-    	<!--
-    	<class>org.jbpm.runtime.manager.impl.jpa.ContextMappingInfo</class>
-    	-->
+    	<class>org.jbpm.services.task.audit.impl.model.AuditTaskImpl</class>
 		<exclude-unlisted-classes>true</exclude-unlisted-classes>
-		
+	</persistence-unit>
+
+	<persistence-unit name="persistenceUnitEclipseLinkResourceLocal" transaction-type="RESOURCE_LOCAL">
+		<provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
+		<mapping-file>META-INF/JBPMorm.xml</mapping-file>
+		<mapping-file>META-INF/mapping/WorkItemInfo.xml</mapping-file>
+		<mapping-file>META-INF/mapping/SessionInfo.xml</mapping-file>
+		<mapping-file>META-INF/mapping/ProcessInstanceInfo.xml</mapping-file>
+    	<class>org.jbpm.persistence.correlation.CorrelationKeyInfo</class>
+    	<class>org.jbpm.persistence.correlation.CorrelationPropertyInfo</class>
+		<exclude-unlisted-classes>true</exclude-unlisted-classes>
+	</persistence-unit>
+	
+	<persistence-unit name="persistenceUnitEclipseLinkJta" transaction-type="JTA">
+		<provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
+		<mapping-file>META-INF/JBPMorm.xml</mapping-file>
+		<mapping-file>META-INF/mapping/WorkItemInfo.xml</mapping-file>
+		<mapping-file>META-INF/mapping/SessionInfo.xml</mapping-file>
+		<mapping-file>META-INF/mapping/ProcessInstanceInfo.xml</mapping-file>
+    	<class>org.jbpm.persistence.correlation.CorrelationKeyInfo</class>
+    	<class>org.jbpm.persistence.correlation.CorrelationPropertyInfo</class>
+		<exclude-unlisted-classes>true</exclude-unlisted-classes>
 	</persistence-unit>
 </persistence>

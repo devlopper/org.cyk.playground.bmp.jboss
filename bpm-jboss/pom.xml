@@ -14,9 +14,8 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<maven.compiler.source>1.8</maven.compiler.source>
 		<maven.compiler.target>1.8</maven.compiler.target>
-		<version.org.drools>6.0.0.Final</version.org.drools>
-		<jbpm.version>6.0.0.Final</jbpm.version>
-		<!--jbpm.version>7.7.0.Final</jbpm.version-->
+		<version.org.drools>7.7.0.Final</version.org.drools>
+		<jbpm.version>7.7.0.Final</jbpm.version>
 		<hibernate.version>4.2.0.Final</hibernate.version>
 	    <slf4j.version>1.6.4</slf4j.version>
 	    <jboss.javaee.version>1.0.0.Final</jboss.javaee.version>
@@ -38,29 +37,29 @@
 	        <scope>import</scope>
 	      </dependency>
 	      <!-- define drools BOM -->
-	      <!--dependency>
+	      <dependency>
 	        <groupId>org.jbpm</groupId>
 	        <artifactId>jbpm-bom</artifactId>
 	        <type>pom</type>
-	        <version>${version.org.jbpm}</version>
+	        <version>${jbpm.version}</version>
 	        <scope>import</scope>
-	      </dependency-->
+	      </dependency>
 	    </dependencies>
 	  </dependencyManagement>
 
 	<repositories>
-    <repository>
-      <id>jboss-public-repository-group</id>
-      <name>JBoss Public Repository Group</name>
-      <url>http://repository.jboss.org/nexus/content/groups/public/</url>
-      <releases>
-        <updatePolicy>never</updatePolicy>
-      </releases>
-      <snapshots>
-        <updatePolicy>daily</updatePolicy>
-      </snapshots>
-    </repository>
-  </repositories>
+    	<repository>
+     		<id>jboss-public-repository-group</id>
+      		<name>JBoss Public Repository Group</name>
+      		<url>http://repository.jboss.org/nexus/content/groups/public/</url>
+      		<releases>
+        		<updatePolicy>never</updatePolicy>
+      		</releases>
+      		<snapshots>
+        		<updatePolicy>daily</updatePolicy>
+      		</snapshots>
+		</repository>
+	</repositories>
 
 	<build>
 		<plugins>
@@ -81,34 +80,38 @@
 		<dependency>
 			<groupId>org.jbpm</groupId>
 			<artifactId>jbpm-flow</artifactId>
-			<version>${jbpm.version}</version>
 		</dependency>
 		
 		<dependency>
 			<groupId>org.jbpm</groupId>
 			<artifactId>jbpm-bpmn2</artifactId>
-			<version>${jbpm.version}</version>
 		</dependency>
 		
 		<dependency>
 			<groupId>org.jbpm</groupId>
 			<artifactId>jbpm-flow-builder</artifactId>
-			<version>${jbpm.version}</version>
 		</dependency>
 
 		<dependency>
 			<groupId>org.jbpm</groupId>
 			<artifactId>jbpm-persistence-jpa</artifactId>
-			<version>${jbpm.version}</version>
 		</dependency>
 		
 		<dependency>
 		    <groupId>org.jbpm</groupId>
 		    <artifactId>jbpm-runtime-manager</artifactId>
-		    <version>${jbpm.version}</version>
 		</dependency>
 		
-
+		<dependency>
+		    <groupId>org.jbpm</groupId>
+		    <artifactId>jbpm-human-task-core</artifactId>
+		</dependency>
+		
+		<dependency>
+		    <groupId>org.jbpm</groupId>
+		    <artifactId>jbpm-human-task-jpa</artifactId>
+		</dependency>
+		
 		<!-- test -->
 
 		<dependency>
@@ -121,16 +124,8 @@
 		<dependency>
 		    <groupId>org.jbpm</groupId>
 		    <artifactId>jbpm-test</artifactId>
-		    <version>${jbpm.version}</version>
 		    <scope>test</scope>
 		</dependency>
-
-		<!--dependency>
-			<groupId>org.hibernate</groupId>
-			<artifactId>hibernate-core</artifactId>
-			<version>5.3.0.Final</version>
-			<scope>test</scope>
-		</dependency-->
 
 		<dependency>
 			<groupId>org.eclipse.persistence</groupId>
@@ -145,7 +140,6 @@
 			<version>2.4.0</version>
 			<scope>test</scope>
 		</dependency>
-
-
+				
 	</dependencies>
 </project>
