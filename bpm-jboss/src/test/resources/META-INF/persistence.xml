@@ -13,6 +13,7 @@
 	</persistence-unit>
 
 	<persistence-unit name="persistenceUnitHibernateJta" transaction-type="JTA">
+		
 		<mapping-file>META-INF/JBPMorm.xml</mapping-file>
 		<mapping-file>META-INF/mapping/WorkItemInfo.xml</mapping-file>
 		<mapping-file>META-INF/mapping/SessionInfo.xml</mapping-file>

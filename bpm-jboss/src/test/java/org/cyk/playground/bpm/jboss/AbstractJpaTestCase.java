@@ -109,7 +109,7 @@ public abstract class AbstractJpaTestCase extends JbpmJUnitBaseTestCase {
 		TaskService taskService = runtimeEngine.getTaskService();
 		
 		ProcessInstance processInstance = session.startProcess("org.cyk.playground.bpm.jboss.ValidateSale");
-
+		
 		assertProcessInstanceActive(processInstance.getId());
 		//assertNodeExists(processInstance, "Structure Analysis");
 		
