@@ -1,5 +1,11 @@
 package org.cyk.playground.bpm.jboss;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.fail;
+
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Properties;
 
@@ -23,12 +29,14 @@ import org.kie.api.runtime.manager.RuntimeEnvironment;
 import org.kie.api.runtime.manager.RuntimeEnvironmentBuilder;
 import org.kie.api.runtime.manager.RuntimeManager;
 import org.kie.api.runtime.manager.RuntimeManagerFactory;
+import org.kie.api.runtime.manager.audit.AuditService;
+import org.kie.api.runtime.manager.audit.NodeInstanceLog;
+import org.kie.api.runtime.manager.audit.ProcessInstanceLog;
 import org.kie.api.runtime.process.ProcessInstance;
 import org.kie.api.task.TaskService;
 import org.kie.api.task.UserGroupCallback;
 import org.kie.api.task.model.TaskSummary;
 import org.kie.internal.io.ResourceFactory;
-import org.kie.internal.runtime.StatefulKnowledgeSession;
 import org.kie.internal.runtime.manager.context.ProcessInstanceIdContext;
 
 @RunWith(Arquillian.class)
@@ -93,12 +101,34 @@ public class PersistenceSetupUnitTest {
 		RuntimeEngine runtimeEngine = runtimeManager.getRuntimeEngine(ProcessInstanceIdContext.get());
 		KieSession session = runtimeEngine.getKieSession();
 		TaskService taskService = runtimeEngine.getTaskService();
+		AuditService auditService = runtimeEngine.getAuditService();
 		
 		ProcessInstance processInstance = session.startProcess("org.cyk.playground.bpm.jboss.process01");
 
-		//assertProcessInstanceActive(processInstance.getId(), session);
-		//assertNodeTriggered(processInstance.getId(), "Task 1");
+		//Assert state
+		ProcessInstanceLog processInstanceLog = auditService.findProcessInstance(processInstance.getId());
+        assertNotNull("Process instance has not been found", processInstanceLog);
+        assertEquals("Process instance is not active", new Integer(ProcessInstance.STATE_ACTIVE), processInstanceLog.getStatus());
 		
+        //Assert triggered
+        List<String> names = new ArrayList<>(Arrays.asList("Task 1"));
+        List<? extends NodeInstanceLog> nodeInstanceLogs = auditService.findNodeInstances(processInstance.getId());
+        if (nodeInstanceLogs != null) {
+            for (NodeInstanceLog index : nodeInstanceLogs) {
+                String nodeName = index.getNodeName();
+                if ((index.getType() == NodeInstanceLog.TYPE_ENTER || index.getType() == NodeInstanceLog.TYPE_EXIT) && names.contains(nodeName)) {
+                    names.remove(nodeName);
+                }
+            }
+        }
+        if (!names.isEmpty()) {
+            String s = names.get(0);
+            for (int i = 1; i < names.size(); i++) {
+                s += ", " + names.get(i);
+            }
+            fail("Node(s) not executed: " + s);
+        }
+        
 		// let john execute Task 1
 		List<TaskSummary> list = taskService.getTasksAssignedAsPotentialOwner("john", "en-UK");
 		TaskSummary task = list.get(0);
@@ -135,8 +165,14 @@ public class PersistenceSetupUnitTest {
 		KieSession session = runtimeEngine.getKieSession();
 		
 		TaskService taskService = runtimeEngine.getTaskService();
+		AuditService auditService = runtimeEngine.getAuditService();
 		
 		ProcessInstance processInstance = session.startProcess("org.cyk.playground.bpm.jboss.ValidateSale");
+		
+		//Assert state
+		ProcessInstanceLog processInstanceLog = auditService.findProcessInstance(processInstance.getId());
+		assertNotNull("Process instance has not been found", processInstanceLog);
+		assertEquals("Process instance is not active", new Integer(ProcessInstance.STATE_ACTIVE), processInstanceLog.getStatus());
 		
 		//assertProcessInstanceActive(processInstance.getId());
 		//assertNodeExists(processInstance, "Structure Analysis");
@@ -185,32 +221,6 @@ public class PersistenceSetupUnitTest {
 	
 	private RuntimeManager getRuntimeManager(String processFileName){
 		return getRuntimeManager(processFileName, null);
-	}
-	
-	protected StatefulKnowledgeSession getStatefulKnowledgeSession(String processFileName){
-		// first configure environment that will be used by RuntimeManager
-	    RuntimeEnvironment runtimeEnvironment = RuntimeEnvironmentBuilder.Factory.get().newDefaultBuilder().entityManagerFactory(entityManagerFactory)
-	    		.addAsset(ResourceFactory.newClassPathResource(processFileName), ResourceType.BPMN2)
-	    .get();
-
-	    // next create RuntimeManager - in this case singleton strategy is chosen
-	    RuntimeManager runtimeManager = RuntimeManagerFactory.Factory.get().newSingletonRuntimeManager(runtimeEnvironment);
-	    
-		//Environment environment = EnvironmentFactory.newEnvironment();
-		/*environment.set(EnvironmentName.ENTITY_MANAGER_FACTORY, entityManagerFactory);
-		environment.set(EnvironmentName.TRANSACTION_MANAGER, new ContainerManagedTransactionManager());
-		environment.set(EnvironmentName.PERSISTENCE_CONTEXT_MANAGER, new JpaProcessPersistenceContextManager(environment));
-		environment.set(EnvironmentName.TASK_PERSISTENCE_CONTEXT_MANAGER, new JPATaskPersistenceContextManager(environment));
-		*/
-		
-	    RuntimeEngine runtimeEngine = runtimeManager.getRuntimeEngine(ProcessInstanceIdContext.get());
-		
-        // get access to KieSession instance
-        KieSession knowledgeSession = runtimeEngine.getKieSession();
-		// create a new knowledge session that uses JPA to store the runtime state
-        //StatefulKnowledgeSession statefulKnowledgeSession = JPAKnowledgeService.newStatefulKnowledgeSession( knowledgeSession.getKieBase(), null, runtimeEnvironment );
-        //return statefulKnowledgeSession;
-        return null;
 	}
 	
 	/* Deployment */
